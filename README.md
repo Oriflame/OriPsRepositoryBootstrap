@@ -23,12 +23,15 @@ The above command will take care of every necessary steps like:
 
 1. Checks if required module is already loaded with a required (or higher) version
 2. ... if not, tryes to import required version from installed modules
-3. {TBD} If the loaded module version is still lower or missing (it is not installed) it tries to install it:
-4. {TBD} Checks for prerequisities like PS version, packagteManager version etc (check is done only once in a session lifetime once satisfied)
-5. {TBD} Installs necessary tools if needed (PowershellGet etc)
-6. {TBD} Registers repository if not yet
-7. {TBD} Installs the module
-8. {TBD} Loads required version of the module
+3. If the loaded module version is still lower or missing (it is not installed) it tries to install it:
+4. Checks for prerequisities like PS version, packagteManager version etc (check is done only once in a session lifetime once satisfied)
+5. Installs necessary tools if needed (PowershellGet etc)
+6. Registers repository if not yet
+7. Installs the module
+8. Loads required version of the module
+
+TODO: it also installs latest version of PsRepositoryBootstrap if not installed
+TODO: once a while (daily?) it checks for higher version of the PsRepositoryBootstrap module and installs it if available
 
 ## How to test
 
