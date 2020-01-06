@@ -1,4 +1,3 @@
-
 <#
 .DESCRIPTION
     It does the following:
@@ -37,12 +36,14 @@ function Import-OriPsModule
 
     $ErrorActionPreference='Stop';
 
+    Write-Debug "Trying to load module [$Name] with version [$RequiredVersion]."
 
     ################### 1. Checks if required module is already loaded with a required (or higher) version
     $currentlyLoadedModule = Get-Module -Name $Name -ea SilentlyContinue;
-    if ($currentlyLoadedModule -eq $null -or $currentlyLoadedModule.version -le $RequiredVersion)
+    if ($currentlyLoadedModule -eq $null -or $currentlyLoadedModule.version -lt [Version]$RequiredVersion)
     {
         ################### 2. ... if not, tryes to import required version from installed modules
+        Write-Debug "Module version currently loaded: [$($currentlyLoadedModule.version)]"
         Import-Module -Name $Name -RequiredVersion $RequiredVersion -ea SilentlyContinue;
         $currentlyLoadedModule = Get-Module -Name $Name -ea SilentlyContinue;
     }
@@ -58,9 +59,9 @@ function Import-OriPsModule
     }
 
     ########## self-installation of PsRepositoryBootstrap module ##########
-    Import-Module -Name PsRepositoryBootstrap -ea SilentlyContinue;
-    if (!(Get-Module -Name PsRepositoryBootstrap))
-    {
-        #PsRepositoryBootstrap not installed!
-    }
+    #Import-Module -Name PsRepositoryBootstrap -ea SilentlyContinue;
+    #if (!(Get-Module -Name PsRepositoryBootstrap))
+    #{
+    #    #PsRepositoryBootstrap not installed!
+    #}
 }
