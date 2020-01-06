@@ -14,7 +14,7 @@ steps:
     script: |
       $ErrorActionPreference = 'stop'
       
-      $TestsPath= '$(System.DefaultWorkingDirectory)\*.tests.ps1' #'$(TestsPath)'
+      $TestsPath= '$(System.DefaultWorkingDirectory)/*.tests.ps1' #'$(TestsPath)'
       
       #if([string]::IsNullOrEmpty($TestsPath) -or ($TestsPath.StartsWith('$'+'(') -and $TestsPath.EndsWith(')'))) {
       #   $TestsPath = '**/Tests/*.tests.ps1'
@@ -22,7 +22,7 @@ steps:
       #}
       
       #TEST RESULTS
-      $TestResultFolder = '$(Build.BinariesDirectory)\TestResults'
+      $TestResultFolder = '$(Build.BinariesDirectory)/TestResults'
       $TestResultFile = (Join-Path -Path $TestResultFolder -ChildPath ('TEST-{0}.xml' -f (New-Guid).Guid))
       If(!(Test-path -Path $TestResultFolder))
       {
