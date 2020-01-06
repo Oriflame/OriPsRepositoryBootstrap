@@ -65,7 +65,7 @@ function Import-OriPsModule
         $currentDevOpsRepo = Get-PackageSource -Name $PsRepositoryName -ProviderName PowerShellGet -ea SilentlyContinue;
         if ($currentDevOpsRepo -eq $null)
         {
-            Register-PackageSource -Name $PsRepositoryName -Location https://pkgs.dev.azure.com/oriflame/_packaging/GlobalDev/nuget/v3/index.json -Trusted -ProviderName PowerShellGet
+            Register-PackageSource -Name $PsRepositoryName -Location https://pkgs.dev.azure.com/oriflame/_packaging/PackageManagementFeed/nuget/v3/index.json -Trusted -ProviderName PowerShellGet | Out-Null
         }
 
         ################### 7. Installs the module
