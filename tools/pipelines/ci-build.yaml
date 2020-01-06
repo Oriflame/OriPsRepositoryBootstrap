@@ -14,7 +14,7 @@ steps:
     script: |
       $ErrorActionPreference = 'stop'
       
-      $TestsPath= '$(System.DefaultWorkingDirectory)/*.tests.ps1' #'$(TestsPath)'
+      $TestsPath= '$(System.DefaultWorkingDirectory)/**/*.tests.ps1' #'$(TestsPath)'
       
       #if([string]::IsNullOrEmpty($TestsPath) -or ($TestsPath.StartsWith('$'+'(') -and $TestsPath.EndsWith(')'))) {
       #   $TestsPath = '**/Tests/*.tests.ps1'
