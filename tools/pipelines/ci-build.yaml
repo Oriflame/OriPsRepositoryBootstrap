@@ -9,6 +9,8 @@ pool:
 
 steps:
 - task: PowerShell@2
+  name: run_pester_pwsh
+  displayName: PowerShell Unit Test
   inputs:
     targetType: 'inline'
     script: |
