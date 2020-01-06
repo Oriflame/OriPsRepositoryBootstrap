@@ -1,1 +1,14 @@
-#TBD: 
+# CI build for PsRepositoryBootstrap
+# it should run Pester to unit test bootstrap
+# it should deploy to devops artifacts if pushpackage = true
+# TBD: call template from /devops
+#
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: Pester Powershell unittest@2
+  inputs:
+    ItemSpec: '*.tests.ps1'
+    FailOnError: true
