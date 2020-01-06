@@ -24,7 +24,7 @@ steps:
       #}
       
       #TEST RESULTS
-      $TestResultFolder = '$(Build.BinariesDirectory)/TestResults'
+      $TestResultFolder = '$(Common.TestResultsDirectory)/TestResults'
       $TestResultFile = (Join-Path -Path $TestResultFolder -ChildPath ('TEST-{0}.xml' -f (New-Guid).Guid))
       If(!(Test-path -Path $TestResultFolder))
       {
@@ -39,3 +39,10 @@ steps:
       Invoke-Pester  -OutputFile $TestResultFile -OutputFormat 'NUnitXml' -Path $TestsPath
     pwsh: true
     workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: NUnit
+    searchFolder: '$(Common.TestResultsDirectory)'
+    failTaskOnFailedTests: true
