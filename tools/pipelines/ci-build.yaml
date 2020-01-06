@@ -8,7 +8,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: Pester Powershell unittest@2
+- task: Pester@8
   inputs:
-    ItemSpec: '*.tests.ps1'
-    FailOnError: true
+    scriptFolder: '$(System.DefaultWorkingDirectory)\*.tests.ps1'
+    resultsFile: '$(System.DefaultWorkingDirectory)\Test-Pester.XML'
+#    CodeCoverageOutputFile: '$(System.DefaultWorkingDirectory)\Code-Coverage.xml'
+#    CodeCoverageFolder: 'src'
+    run32Bit: False
