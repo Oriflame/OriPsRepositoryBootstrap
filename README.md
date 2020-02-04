@@ -1,6 +1,6 @@
 # PsRepositoryBootstrap
 
-Powershell repository bootstrap (Import-OriPsModule) to hide logic behind integration PowerShell Repository with DevOps nuget source
+Powershell repository bootstrap (Import-OriPsModule) to hide logic behind integration PowerShell Repository with DevOps nuget source.
 
 ## Motivation
 
@@ -15,9 +15,15 @@ We want to make consumption of our PowerShell modules easy and straitghforward o
 This bootstrap provides a simple way how to install a module from our custom repository and use it on a machine under a user with Azure Active Directory access.
 
 Use it like:
+```ps
+$url = 'https://raw.githubusercontent.com/Oriflame/PsRepositoryBootstrap/develop/src/public/Import-OriPsModule.ps1'
 
-    if (!(Get-Command -name Import-OriPsModule)){iwr -useBasicParsing -url {TBD}|iex}
-    Import-OriPsModule -name MyCustomModule -requiredVersion 1.2
+if (!(Get-Command -name Import-OriPsModule -ea SilentlyContinue)) {
+    Invoke-WebRequest -useBasicParsing -uri $url | Invoke-Expression
+}
+
+Import-OriPsModule -Name MyModule -RequiredVersion 1.0.2
+```
 
 The above command will take care of every necessary steps like:
 

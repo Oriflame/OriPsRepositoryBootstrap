@@ -1,7 +1,7 @@
 #
 # Module manifest for module 'PsRepositoryBootstrap'
 #
-# Author: Jan Vilimek, Oriflame
+# Author: Oriflame software s.r.o.
 #
 
 @{
@@ -19,10 +19,10 @@ ModuleVersion = '1.0.0'
 GUID = 'AAEDDA3C-70E2-4D8A-9C25-744971363B0A'
 
 # Author of this module
-Author = 'Jan Vilimek'
+Author = 'Oriflame software s.r.o.'
 
 # Company or vendor of this module
-CompanyName = 'ORIFLAME'
+CompanyName = 'Oriflame software s.r.o.'
 
 # Copyright statement for this module
 Copyright = '(c) 2020 Oriflame. All rights reserved.'
@@ -31,7 +31,7 @@ Copyright = '(c) 2020 Oriflame. All rights reserved.'
 Description = 'Bootstrap for PS Repository modules'
 
 # Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '4.0'
+PowerShellVersion = '5.1'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
@@ -68,7 +68,9 @@ PowerShellVersion = '4.0'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
-    'Import-OriPsModule'
+    'Import-OriPsModule',
+    'Test-GetModule',
+    'Invoke-RegisterOriflameFeeds'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -122,4 +124,3 @@ PrivateData = @{
 # DefaultCommandPrefix = ''
 
 }
-

@@ -1,5 +1,3 @@
-
-
 $functionFolders = @('enum','class','public','private' )
 ForEach ($folder in $functionFolders)
 {
