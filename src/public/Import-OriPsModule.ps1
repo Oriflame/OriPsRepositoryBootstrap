@@ -47,7 +47,8 @@ function Import-OriPsModule {
 
     # Required module needs to be installed and impoted
     "GlobalDev", "PackageManagementFeed" | Invoke-RegisterOriflameFeeds
-    Install-Module -Name $Name -RequiredVersion $RequiredVersion -Force
+    Install-Module -Name $Name -RequiredVersion $RequiredVersion -Force;
+    Import-Module -Name $Name -RequiredVersion $RequiredVersion;
 }
 
 
