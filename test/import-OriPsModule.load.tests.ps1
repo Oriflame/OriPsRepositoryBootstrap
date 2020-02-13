@@ -27,7 +27,7 @@ Describe 'Testing Import-OriPsModule' {
         }
 
         It "Module is already imported" {
-            Import-OriPsModule -Name "someModule" -RequiredVersion 0.9.0 -Verbose;
+            Import-OriPsModule -Name "someModule" -RequiredVersion "0.9.0" -Verbose;
             Assert-MockCalled -CommandName Test-GetModule -Times 1 -Exactly;
             Assert-MockCalled -CommandName Import-Module -Times 0 -Exactly;
             Assert-MockCalled -CommandName Install-Module -Times 0 -Exactly;
@@ -35,7 +35,7 @@ Describe 'Testing Import-OriPsModule' {
         } 
 
         It "Module needs to be imported" {
-            Import-OriPsModule -Name "someModule" -RequiredVersion 1.0.0 -Verbose;
+            Import-OriPsModule -Name "someModule" -RequiredVersion "1.0.0" -Verbose;
             Assert-MockCalled -CommandName Test-GetModule -Times 1 -Exactly;
             Assert-MockCalled -CommandName Import-Module -Times 1 -Exactly;
             Assert-MockCalled -CommandName Install-Module -Times 0 -Exactly;
@@ -43,7 +43,7 @@ Describe 'Testing Import-OriPsModule' {
         }
 
         It "Module needs to be installed" {
-            Import-OriPsModule -Name "someModule" -RequiredVersion 1.1.0 -Verbose;
+            Import-OriPsModule -Name "someModule" -RequiredVersion "1.1.0" -Verbose;
             Assert-MockCalled -CommandName Test-GetModule -Times 2 -Exactly;
             Assert-MockCalled -CommandName Import-Module -Times 1 -Exactly;
             Assert-MockCalled -CommandName Install-Module -Times 1 -Exactly;
@@ -58,11 +58,11 @@ Describe 'Testing Test-GetModule' {
         Mock Get-Module { return $false; } -ParameterFilter { $RequiredVersion -and $RequiredVersion -eq "1.0.0" };
 
         It "Module is already imported" {
-            Test-GetModule -Name "someModule" -RequiredVersion 0.9.0 -Verbose | Should -Be $true;
+            Test-GetModule -Name "someModule" -RequiredVersion "0.9.0" -Verbose | Should -Be $true;
         }
 
         It "Module is not yet imported" {
-            Test-GetModule -Name "someModule" -RequiredVersion 1.0.0 -Verbose | Should -Be $false;
+            Test-GetModule -Name "someModule" -RequiredVersion "1.0.0" -Verbose | Should -Be $false;
         }
     }
 }
