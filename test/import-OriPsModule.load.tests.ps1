@@ -1,65 +1,68 @@
+Get-Module -Name PsRepositoryBootstrap | Remove-Module;
+Import-Module -Name "$PSScriptRoot\..\src\PsRepositoryBootstrap.psd1";
 
-Get-Module -Name PsRepositoryBootstrap | Remove-Module
-
-Import-Module -Name "$PSScriptRoot\..\src\PsRepositoryBootstrap.psd1"
-
-Describe 'Simple-Imports' {
-
+Describe 'Testing Import-OriPsModule' {
     InModuleScope PsRepositoryBootstrap {
+        $numCalls          = @{ "0.9.0" = 0; "1.0.0" = 0; "1.1.0" = 0 };
+        $numCallsUntilTrue = @{ "0.9.0" = 0; "1.0.0" = 1; "1.1.0" = 2 };
 
-        Mock Get-Module { return @{Version=[Version]'0.9.0'}}
-        Mock Import-Module {} -Verifiable -ParameterFilter {$name -eq "someModule"}
-        Mock Get-PackageProvider { return @{Version=[Version]'2.2.3.0'}}
-        Mock Install-PackageProvider {} -Verifiable
-        Mock Get-PackageSource {}
-        Mock Register-PackageSource {}
+        Mock Test-GetModule { 
+            if($numCallsUntilTrue[$RequiredVersion] -ne $numCalls[$RequiredVersion]) {
+                $numCalls[$RequiredVersion] = $numCalls[$RequiredVersion] + 1;
+                return $false;
+            }
+
+            return $true;
+        }
+        Mock Import-Module {}
         Mock Install-Module {}
+        Mock Invoke-RegisterOriflameFeeds {}
 
-        It "without mandatory parameter Name exception expected" {
-            #this should throw an error
-            { Import-OriPsModule } | Should Throw
+        It "Parameter validation: Missing [Name] and [RequiredVersion]" {
+            Import-OriPsModule | Should Throw;
+        }
+
+        It "Parameter validation: Missing [RequiredVersion]" {
+            Import-OriPsModule -Name "someModule" | Should Throw;
+        }
+
+        It "Module is already imported" {
+            Import-OriPsModule -Name "someModule" -RequiredVersion 0.9.0 -Verbose;
+            Assert-MockCalled -CommandName Test-GetModule -Times 1 -Exactly;
+            Assert-MockCalled -CommandName Import-Module -Times 0 -Exactly;
+            Assert-MockCalled -CommandName Install-Module -Times 0 -Exactly;
+            Assert-MockCalled -CommandName Invoke-RegisterOriflameFeeds -Times 0 -Exactly;
         } 
 
+        It "Module needs to be imported" {
+            Import-OriPsModule -Name "someModule" -RequiredVersion 1.0.0 -Verbose;
+            Assert-MockCalled -CommandName Test-GetModule -Times 1 -Exactly;
+            Assert-MockCalled -CommandName Import-Module -Times 1 -Exactly;
+            Assert-MockCalled -CommandName Install-Module -Times 0 -Exactly;
+            Assert-MockCalled -CommandName Invoke-RegisterOriflameFeeds -Times 0 -Exactly;
+        }
 
-        It "without mandatory parameter RequiredVersion exception expected" {
-            #this should throw an error
-            {Import-OriPsModule -Name "someModule"} | Should Throw
-        } 
-
-
-        It "with all mandatory parameters should be OK" {
-            Import-OriPsModule -Name "someModule" -RequiredVersion 0.9.0 -Verbose
-            Assert-MockCalled -CommandName Import-Module -Times 0 -Exactly
-        } 
-
-
-        It "must replace lower version" {
-            Import-OriPsModule -Name "someModule" -RequiredVersion 1.0.0 -Verbose
-            Assert-MockCalled -CommandName Import-Module -Times 2 -Exactly  #one for first import which returns nothing, second for import after install
-            Assert-MockCalled -CommandName Get-PackageProvider -Times 1 -Exactly
-            Assert-MockCalled -CommandName Install-PackageProvider -Times 0 -Exactly
-            Assert-MockCalled -CommandName Install-Module -Times 1 -Exactly
+        It "Module needs to be installed" {
+            Import-OriPsModule -Name "someModule" -RequiredVersion 1.1.0 -Verbose;
+            Assert-MockCalled -CommandName Test-GetModule -Times 2 -Exactly;
+            Assert-MockCalled -CommandName Import-Module -Times 1 -Exactly;
+            Assert-MockCalled -CommandName Install-Module -Times 1 -Exactly;
+            Assert-MockCalled -CommandName Invoke-RegisterOriflameFeeds -Times 1 -Exactly;
         }
     }
 }
 
-Describe 'RepositoryInstall-checks' {
-
+Describe 'Testing Test-GetModule' {
     InModuleScope PsRepositoryBootstrap {
+        Mock Get-Module { return $true; } -ParameterFilter { $RequiredVersion -and $RequiredVersion -eq "0.9.0" };
+        Mock Get-Module { return $false; } -ParameterFilter { $RequiredVersion -and $RequiredVersion -eq "1.0.0" };
 
-        Mock Get-Module { return @{Version=[Version]'0.9.0'}}
-        Mock Import-Module {}
-        Mock Get-PackageProvider { return @{Version=[Version]'2.2.2.9'}}
-        Mock Install-PackageProvider {} -Verifiable -ParameterFilter {$Name -eq "PowerShellGet"}
-        Mock Get-PackageSource {}
-        Mock Register-PackageSource {} -Verifiable
-        Mock Install-Module {} -Verifiable
+        It "Module is already imported" {
+            Test-GetModule -Name "someModule" -RequiredVersion 0.9.0 -Verbose | Should -Be $true;
+        }
 
-        It "Check installation of PowerShellGet provider" {
-            Import-OriPsModule -Name "someModule" -RequiredVersion 1.0.0 -Verbose
-            Assert-MockCalled -CommandName Install-PackageProvider -Times 1 -Exactly
-            Assert-MockCalled -CommandName Register-PackageSource -Times 1 -Exactly
-            Assert-MockCalled -CommandName Install-Module -Times 1 -Exactly
+        It "Module is not yet imported" {
+            Test-GetModule -Name "someModule" -RequiredVersion 1.0.0 -Verbose | Should -Be $false;
         }
     }
 }
