@@ -66,24 +66,43 @@ Describe 'Testing Invoke-RegisterOriflameFeeds' {
                 Mock Test-GetModule { return $false; };
                 Mock Install-Module;
                 Mock Get-PSRepository { return @(); };
+                Mock Register-PSRepository
 
                 Invoke-RegisterOriflameFeeds -Feeds @();
                 Assert-MockCalled -CommandName Test-GetModule -Times 1 -Exactly;
                 Assert-MockCalled -CommandName Install-Module -Times 1 -Exactly;
                 Assert-MockCalled -CommandName Get-PSRepository -Times 1 -Exactly;
+                Assert-MockCalled -CommandName Register-PSRepository -Times 0 -Exactly;
             }
         }
 
-        Context "Twp registered package feed" {
-            It "One of the package feed is not registered" {
+        Context "Required to register new feed - the required feed is not installed" {
+            It "Should register requested feed" {
                 Mock Test-GetModule { return $true; };
+                Mock Install-Module
                 Mock Get-PSRepository { return @([PSCustomObject]@{ SourceLocation = "https://pkgs.dev.azure.com/oriflame/_packaging/PackageManagementFeed/nuget/v2" }) };
                 Mock Register-PSRepository {};
 
                 Invoke-RegisterOriflameFeeds -Feeds @( "GlobalDev" );
                 Assert-MockCalled -CommandName Test-GetModule -Times 1 -Exactly;
+                Assert-MockCalled -CommandName Install-Module -Times 0 -Exactly;
                 Assert-MockCalled -CommandName Get-PSRepository -Times 1 -Exactly;
                 Assert-MockCalled -CommandName Register-PSRepository -Times 1 -Exactly;
+            }
+        }
+
+        Context "Required to register new feed - the required feed is already installed" {
+            It "Should skip register requested feed" {
+                Mock Test-GetModule { return $true; };
+                Mock Install-Module
+                Mock Get-PSRepository { return @([PSCustomObject]@{ SourceLocation = "https://pkgs.dev.azure.com/oriflame/_packaging/PackageManagementFeed/nuget/v2" }) };
+                Mock Register-PSRepository {};
+
+                Invoke-RegisterOriflameFeeds -Feeds @( "PackageManagementFeed" );
+                Assert-MockCalled -CommandName Test-GetModule -Times 1 -Exactly;
+                Assert-MockCalled -CommandName Install-Module -Times 0 -Exactly;
+                Assert-MockCalled -CommandName Get-PSRepository -Times 1 -Exactly;
+                Assert-MockCalled -CommandName Register-PSRepository -Times 0 -Exactly;
             }
         }
     }
