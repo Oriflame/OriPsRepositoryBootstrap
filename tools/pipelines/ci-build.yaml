@@ -1,0 +1,48 @@
+# CI build for PsRepositoryBootstrap
+# it should run Pester to unit test bootstrap
+# it should deploy to devops artifacts if pushpackage = true
+# TBD: call template from /devops
+#
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: PowerShell@2
+  name: run_pester_pwsh
+  displayName: PowerShell Unit Test
+  inputs:
+    targetType: 'inline'
+    script: |
+      $ErrorActionPreference = 'stop'
+      
+      $TestsPath= '$(System.DefaultWorkingDirectory)/**/*.tests.ps1' #'$(TestsPath)'
+      
+      #if([string]::IsNullOrEmpty($TestsPath) -or ($TestsPath.StartsWith('$'+'(') -and $TestsPath.EndsWith(')'))) {
+      #   $TestsPath = '**/Tests/*.tests.ps1'
+      #   Write-Host "##vso[task.logissue type=warning;] The TestsPath parameter is empty. The default [$TestsPath] will be set."
+      #}
+      
+      #TEST RESULTS
+      $TestResultFolder = '$(Common.TestResultsDirectory)/TestResults'
+      $TestResultFile = (Join-Path -Path $TestResultFolder -ChildPath ('TEST-{0}.xml' -f (New-Guid).Guid))
+      If(!(Test-path -Path $TestResultFolder))
+      {
+            New-Item -ItemType Directory -Force -Path $TestResultFolder | Out-Null;
+      }
+      
+      #IMPORT / INSTALL PESTER
+      Import-Module -Name Pester -ea SilentlyContinue;
+      if (!(Get-Module -Name Pester)) {Install-Module -Name Pester -Force}
+      
+      #Import-Module PSScriptAnalyzer
+      Invoke-Pester  -OutputFile $TestResultFile -OutputFormat 'NUnitXml' -Path $TestsPath
+    pwsh: true
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFormat: NUnit
+    searchFolder: '$(Common.TestResultsDirectory)'
+    failTaskOnFailedTests: true
