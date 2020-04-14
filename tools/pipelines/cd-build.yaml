@@ -47,7 +47,7 @@ jobs:
         $version = '$(GitVersion.Major).$(GitVersion.Minor).$(Build.BuildId)'
         if ($isPrerelease)
         {
-            $buildversion = "$version-$(Build.BuildId)"
+            $buildversion = "$version-$(GitVersion.NuGetPreReleaseTag)+$(GitVersion.CommitsSinceVersionSource)"
         }else
         {
             $buildversion = $version
