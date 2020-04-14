@@ -35,7 +35,7 @@ jobs:
     displayName: 'GitVersion'
     inputs:
       runtime: 'core'
-      configFilePath: 'gitversion.yaml'
+      configFilePath: './gitversion.yaml'
     
   - task: PowerShell@2
     name: update_build_and_module_version
