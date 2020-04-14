@@ -47,7 +47,7 @@ jobs:
         $version = '$(GitVersion.Major).$(GitVersion.Minor).$(Build.BuildId)'
         if ($isPrerelease)
         {
-            $buildversion = "$version-$(GitVersion.NuGetPreReleaseTag)+$(GitVersion.CommitsSinceVersionSource)"
+            $buildversion = "$version-$(GitVersion.NuGetPreReleaseTag)"
         }else
         {
             $buildversion = $version
@@ -67,8 +67,7 @@ jobs:
         script: |
           Get-Module -Name OriPsRepositoryBootstrap | Remove-Module;
           $psManifest = Get-ChildItem -Path "$(System.DefaultWorkingDirectory)/src" -Filter *.psd1 | Select-Object -ExpandProperty FullName -First 1
-          Import-Module -Name $psManifest;
-          Publish-Module -Name OriPsRepositoryBootstrap -NuGetApiKey '$(PsGalleryApiKey)'
+          Publish-Module -Name $psManifest -NuGetApiKey '$(PsGalleryApiKey)'
         pwsh: true
         workingDirectory: '$(System.DefaultWorkingDirectory)'
         condition: and(succeeded())
