@@ -65,7 +65,7 @@ jobs:
       inputs:
         targetType: 'inline'
         script: |
-          Publish-Module -Name OriPsRepositoryBootstrap -NuGetApiKey ($env:PSGALLERYAPIKEY)
+          Publish-Module -Name OriPsRepositoryBootstrap -NuGetApiKey '$(PsGalleryApiKey)'
         pwsh: true
         workingDirectory: '$(System.DefaultWorkingDirectory)'
         condition: and(succeeded())
