@@ -1,0 +1,19 @@
+#see https://gitversion.readthedocs.io/en/latest/input/docs/configuration/#global-configuration
+
+branches:
+    master:
+      regex: ^master
+      mode: ContinuousDelivery
+      tag: ''
+    feature:
+      regex: ^features?[/-]
+      mode: ContinuousDelivery
+      tag: alpha
+    pull-request:
+      regex: ^(pull|pull\-requests|pr)[/-]
+      mode: ContinuousDelivery
+      tag: PullRequest
+    develop:
+      regex: ^dev(elop)?(ment)?$
+      mode: ContinuousDeployment
+      tag: beta
