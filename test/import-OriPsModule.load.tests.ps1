@@ -17,6 +17,7 @@ Describe 'Testing Import-OriPsModule' {
         Mock Import-Module { };
         Mock Install-Module { };
         Mock Invoke-RegisterOriflameFeeds { };
+        Mock Test-OriPsRepositoryBootstrapModuleInstalled { };
 
         It "Module is already imported" {
             Import-OriPsModule -Name "someModule" -RequiredVersion "0.9.0";
