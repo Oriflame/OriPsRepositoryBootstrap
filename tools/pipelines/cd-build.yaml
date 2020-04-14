@@ -40,9 +40,9 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-    Update-ModuleManifest -Path $(Build.ArtifactStagingDirectory)\src\$(Build.Repository.Name).psd1 -ModuleVersion '$(Version)'
-  pwsh: true
-  workingDirectory: '$(System.DefaultWorkingDirectory)'
+      Update-ModuleManifest -Path $(Build.ArtifactStagingDirectory)\src\$(Build.Repository.Name).psd1 -ModuleVersion '$(Version)'
+    pwsh: true
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
 
 - task: PowerShell@2
   name: publish_module_pwsh
@@ -50,6 +50,6 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-    Publish-Module -Name OriPsRepositoryBootstrap -NuGetApiKey $env:PSGALLERYAPIKEY
-  pwsh: true
-  workingDirectory: '$(System.DefaultWorkingDirectory)'
+      Publish-Module -Name OriPsRepositoryBootstrap -NuGetApiKey $env:PSGALLERYAPIKEY
+    pwsh: true
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
