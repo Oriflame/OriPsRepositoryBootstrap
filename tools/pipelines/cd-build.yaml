@@ -17,7 +17,9 @@ trigger:
 
 jobs:
 
-- job: 'Publish to PsGallery'
+- job: Publish_to_PsGallery
+  displayName: Publish to PsGallery
+
   pool:
     vmImage: 'ubuntu-latest'
 
