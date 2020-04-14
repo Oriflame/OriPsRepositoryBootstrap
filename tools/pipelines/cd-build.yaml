@@ -52,7 +52,8 @@ jobs:
             $buildversion = '$(GitVersion.MajorMinorPatch)'
         }
         Write-Output "##vso[build.updatebuildnumber]$buildversion"
-        Update-ModuleManifest -Path $(Build.ArtifactStagingDirectory)\src\$(Build.Repository.Name).psd1 -ModuleVersion '$(GitVersion.MajorMinorPatch)' -Prerelease '$(GitVersion.NuGetPreReleaseTag)'
+        $psManifest = Get-ChildItem -Path "$(Build.ArtifactStagingDirectory)/src" -Filter *.psd1 | Select-Object -ExpandProperty FullName -First 1
+        Update-ModuleManifest -Path $psManifest -ModuleVersion '$(GitVersion.MajorMinorPatch)' -Prerelease '$(GitVersion.NuGetPreReleaseTag)'
       pwsh: true
       workingDirectory: '$(System.DefaultWorkingDirectory)'
   
