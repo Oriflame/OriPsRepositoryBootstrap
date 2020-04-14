@@ -27,9 +27,11 @@ function Import-OriPsModule {
         [parameter(Mandatory = $true, HelpMessage = "Exact name of the mmodule")]
         [string] $Name,
 
-        [parameter(Mandatory=$true, HelpMessage="Minimum required module version")]
+        [parameter(Mandatory = $true, HelpMessage = "Minimum required module version")]
         [Version] $RequiredVersion
     )
+
+    Test-OriPsRepositoryBootstrapModuleInstalled;
 
     # Required module is already imported
     if (Test-GetModule -Name $Name -RequiredVersion $RequiredVersion) {
@@ -51,6 +53,77 @@ function Import-OriPsModule {
     Import-Module -Name $Name -RequiredVersion $RequiredVersion;
 }
 
+function Test-OriPsRepositoryBootstrapModuleInstalled {
+    <#
+    .SYNOPSIS
+        Checks, whether OriPsRepositoryBootstrap is installed and if not, installs it.
+    #>
+    [CmdLetBinding()]
+    param()
+    $oriPsModuleName = 'OriPsRepositoryBootstrap';
+    $RequiredVersion = '1.0';
+    $LastCheckRegName = 'last-version-check';
+    
+    $LastCheckValue = Get-RegistrySetting -Name $LastCheckRegName;
+
+    [datetime]$lastCheck = [datetime]::UtcNow;
+    $shouldWeForceInstallAnyway = $false;
+    if ($null -ne $LastCheckValue -and [DateTime]::TryParseExact($LastCheckValue, 'o', [CultureInfo]::InvariantCulture, [System.Globalization.DateTimeStyles]::None, [ref]$lastCheck)) {
+        $shouldWeForceInstallAnyway = $lastCheck -le [datetime]::UtcNow.AddDays(-1);
+    }
+
+    if (!(Test-GetModule -Name $oriPsModuleName -RequiredVersion $RequiredVersion) -or $shouldWeForceInstallAnyway) {
+        # following will ensure installation to C:\Program Files\WindowsPowerShell\Modules and thus availability in all future sessions
+        Install-Module -Name $oriPsModuleName -MinimumVersion $RequiredVersion -Force -Scope AllUsers -AcceptLicense -Repository PSGallery;
+    }
+
+    Set-RegistrySetting -Name $LastCheckRegName -Value ([datetime]::UtcNow.ToString('o', [CultureInfo]::InvariantCulture))
+}
+
+function Get-RegistrySetting {
+    <#
+    .SYNOPSIS
+        returns registry setting for OriPsRepositoryBootstrap
+    #>
+    [CmdLetBinding()]
+    param (
+        [parameter(Mandatory = $true, HelpMessage = "Name of the setting")]
+        [string] $Name
+    )
+
+    if (-not (Test-Path -LiteralPath $Script:RegistrySettingPath)) {
+        New-Item -Path $Script:RegistrySettingPath -Force | Out-Null
+    }
+
+    try {
+        Get-ItemProperty $Script:RegistrySettingPath -Name $Name -ErrorAction Stop |
+        Select-Object -Expand $Name
+    }
+    catch {
+        $null;
+    }
+}
+
+function Set-RegistrySetting {
+    <#
+    .SYNOPSIS
+        Sets registry setting for OriPsRepositoryBootstrap
+    #>
+    [CmdLetBinding()]
+    param (
+        [parameter(Mandatory = $true, HelpMessage = "Name of the setting")]
+        [string] $Name,
+
+        [parameter(Mandatory = $true, HelpMessage = "Value of the setting")]
+        $Value
+    )
+
+    if (-not (Test-Path -LiteralPath $Script:RegistrySettingPath)) {
+        New-Item -Path $Script:RegistrySettingPath -Force | Out-Null
+    }
+
+    Set-ItemProperty $Script:RegistrySettingPath -Name $Name -Value $Value
+}
 
 function Test-GetModule {
     <#
@@ -63,7 +136,7 @@ function Test-GetModule {
         [parameter(Mandatory = $true, HelpMessage = "Exact name of the mmodule")]
         [string] $Name,
 
-        [parameter(Mandatory=$true, HelpMessage="Minimum required module version")]
+        [parameter(Mandatory = $true, HelpMessage = "Minimum required module version")]
         [Version] $RequiredVersion
     )
 
@@ -103,3 +176,5 @@ function Invoke-RegisterOriflameFeeds {
         }
     }
 }
+
+$Script:RegistrySettingPath = 'HKLM:\Software\Oriflame\PsModules\OriPsRepositoryBootstrap';
