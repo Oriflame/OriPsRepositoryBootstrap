@@ -35,33 +35,24 @@ jobs:
     displayName: 'GitVersion'
     inputs:
       runtime: 'core'
+      configFilePath: 'gitversion.yaml'
     
   - task: PowerShell@2
-    name: update_build_version
-    displayName: Update Build Version
+    name: update_build_and_module_version
+    displayName: Update Build and Module Version
     inputs:
       targetType: 'inline'
       script: |
         [bool]$isPrerelease = '$(GitVersion.NuGetPreReleaseTag)' -ne '';
         if ($isPrerelease)
         {
-            $version = '$(GitVersion.SemVer)-$(Build.BuildId)'
+            $buildversion = '$(GitVersion.MajorMinorPatch)-$(Build.BuildId)'
         }else
         {
-            $version = '$(GitVersion.SemVer)'
+            $buildversion = '$(GitVersion.MajorMinorPatch)'
         }
-        Write-Output "##vso[task.setvariable variable=Version]$version"
-        Write-Output "##vso[build.updatebuildnumber]$version"
-      pwsh: true
-      workingDirectory: '$(System.DefaultWorkingDirectory)'
-  
-  - task: PowerShell@2
-    name: update_manifest
-    displayName: Update PS Manifest
-    inputs:
-      targetType: 'inline'
-      script: |
-        Update-ModuleManifest -Path $(Build.ArtifactStagingDirectory)\src\$(Build.Repository.Name).psd1 -ModuleVersion '$(Version)'
+        Write-Output "##vso[build.updatebuildnumber]$buildversion"
+        Update-ModuleManifest -Path $(Build.ArtifactStagingDirectory)\src\$(Build.Repository.Name).psd1 -ModuleVersion '$(GitVersion.MajorMinorPatch)' -Prerelease '$(GitVersion.NuGetPreReleaseTag)'
       pwsh: true
       workingDirectory: '$(System.DefaultWorkingDirectory)'
   
