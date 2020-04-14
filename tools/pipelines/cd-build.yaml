@@ -44,16 +44,17 @@ jobs:
       targetType: 'inline'
       script: |
         [bool]$isPrerelease = '$(GitVersion.NuGetPreReleaseTag)' -ne '';
+        $version = '$(GitVersion.Major).$(GitVersion.Minor).$(Build.BuildId)'
         if ($isPrerelease)
         {
-            $buildversion = '$(GitVersion.MajorMinorPatch)-$(Build.BuildId)'
+            $buildversion = "$version-$(Build.BuildId)"
         }else
         {
-            $buildversion = '$(GitVersion.MajorMinorPatch)'
+            $buildversion = $version
         }
         Write-Output "##vso[build.updatebuildnumber]$buildversion"
         $psManifest = Get-ChildItem -Path "$(System.DefaultWorkingDirectory)/src" -Filter *.psd1 | Select-Object -ExpandProperty FullName -First 1
-        Update-ModuleManifest -Path $psManifest -ModuleVersion '$(GitVersion.MajorMinorPatch)' -Prerelease '$(GitVersion.NuGetPreReleaseTag)'
+        Update-ModuleManifest -Path $psManifest -ModuleVersion $version -Prerelease '$(GitVersion.NuGetPreReleaseTag)'
       pwsh: true
       workingDirectory: '$(System.DefaultWorkingDirectory)'
   
