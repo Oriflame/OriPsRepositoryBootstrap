@@ -4,6 +4,13 @@
 # TBD: call template from /devops
 #
 
+parameters:
+# pushPackage
+- name: pushPackage
+  type: boolean
+  default: true
+  displayName: 'Should we push package to PsGallery?'
+
 trigger:
     paths:
       exclude:
@@ -67,3 +74,4 @@ jobs:
         Publish-Module -Name OriPsRepositoryBootstrap -NuGetApiKey $env:PSGALLERYAPIKEY
       pwsh: true
       workingDirectory: '$(System.DefaultWorkingDirectory)'
+      condition: and(succeeded(), eq(${{ parameters.pushPackage }}, true))
