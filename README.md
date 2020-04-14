@@ -10,13 +10,14 @@ We want to use built-in commandlets like [Install-Module](https://docs.microsoft
 
 We want to make consumption of our PowerShell modules easy and straitghforward on "client" side, e.g. custom scripts used during build or client-side tools.
 
-## About 
+## About
 
 This bootstrap provides a simple way how to install a module from our custom repository and use it on a machine under a user with Azure Active Directory access.
 
 Use it like:
+
 ```ps
-$url = 'https://raw.githubusercontent.com/Oriflame/PsRepositoryBootstrap/develop/src/public/Import-OriPsModule.ps1'
+$url = 'https://raw.githubusercontent.com/Oriflame/OriPsRepositoryBootstrap/develop/src/public/Import-OriPsModule.ps1'
 
 if (!(Get-Command -name Import-OriPsModule -ea SilentlyContinue)) {
     Invoke-WebRequest -useBasicParsing -uri $url | Invoke-Expression
