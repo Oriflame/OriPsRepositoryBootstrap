@@ -9,6 +9,7 @@ branches:
       regex: ^features?[/-]
       mode: ContinuousDelivery
       tag: alpha
+      increment: Patch
     pull-request:
       regex: ^(pull|pull\-requests|pr)[/-]
       mode: ContinuousDelivery
