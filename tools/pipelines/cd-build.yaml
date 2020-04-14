@@ -1,1 +1,55 @@
-#TBD: 
+# CD build for OriPsRepositoryBootstrap
+# it should run Pester to unit test bootstrap
+# it should deploy to devops artifacts if pushpackage = true
+# TBD: call template from /devops
+#
+
+trigger:
+    paths:
+      exclude:
+      - 'tools/*'
+      - 'docs/*'
+    branches:
+      include:
+      - master
+      - develop
+      - release/*
+
+pool:
+    vmImage: 'ubuntu-latest'
+  
+  steps:
+  - task: GitVersion@5
+    displayName: 'GitVersion'
+    inputs:
+      runtime: 'core'
+  
+  - script: |
+        echo ##vso[task.setvariable variable=Version]$(GitVersion.SemVer)-$(Build.BuildId)
+    displayName: "Set build version (prerelease)"
+    condition: and(succeeded(), ne(variables['GitVersion.NuGetPreReleaseTag'], ''))
+  
+  - script: |
+        echo ##vso[task.setvariable variable=Version]$(GitVersion.SemVer)
+    displayName: "Set build version (release)"
+    condition: and(succeeded(), eq(variables['GitVersion.NuGetPreReleaseTag'], ''))
+
+  - task: PowerShell@2
+    name: update_manifest
+    displayName: Update PS Manifest
+    inputs:
+      targetType: 'inline'
+      script: |
+      Update-ModuleManifest -Path $(Build.ArtifactStagingDirectory)\src\$(Build.Repository.Name).psd1 -ModuleVersion '$(Version)'
+    pwsh: true
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+  - task: PowerShell@2
+    name: publish_module_pwsh
+    displayName: Publish module (PsGallery)
+    inputs:
+      targetType: 'inline'
+      script: |
+      Publish-Module -Name OriPsRepositoryBootstrap -NuGetApiKey $env:PSGALLERYAPIKEY
+    pwsh: true
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
