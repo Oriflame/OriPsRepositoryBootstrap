@@ -57,13 +57,14 @@ jobs:
       pwsh: true
       workingDirectory: '$(System.DefaultWorkingDirectory)'
   
-  - task: PowerShell@2
-    name: publish_module_pwsh
-    displayName: Publish module (PsGallery)
-    inputs:
-      targetType: 'inline'
-      script: |
-        Publish-Module -Name OriPsRepositoryBootstrap -NuGetApiKey $env:SECRET_PSGALLERYAPIKEY
-      pwsh: true
-      workingDirectory: '$(System.DefaultWorkingDirectory)'
-      condition: and(succeeded(), eq({{ parameters.pushPackage }}, true))
+  - ${{ if eq(parameters.pushPackage, true) }}:
+    - task: PowerShell@2
+      name: publish_module_pwsh
+      displayName: Publish module (PsGallery)
+      inputs:
+        targetType: 'inline'
+        script: |
+          Publish-Module -Name OriPsRepositoryBootstrap -NuGetApiKey ($env:PSGALLERYAPIKEY)
+        pwsh: true
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        condition: and(succeeded())
