@@ -67,7 +67,9 @@ jobs:
         script: |
           Get-Module -Name OriPsRepositoryBootstrap | Remove-Module;
           $psManifest = Get-ChildItem -Path "$(System.DefaultWorkingDirectory)/src" -Filter *.psd1 | Select-Object -ExpandProperty FullName -First 1
-          Publish-Module -Name $psManifest -NuGetApiKey '$(PsGalleryApiKey)'
+          Publish-Module -Name $psManifest -NuGetApiKey $env:PsGalleryApiKey
         pwsh: true
         workingDirectory: '$(System.DefaultWorkingDirectory)'
         condition: and(succeeded())
+        env:
+          PsGalleryApiKey: $(PsGalleryApiKey)
