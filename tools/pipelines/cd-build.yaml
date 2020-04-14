@@ -63,7 +63,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        Publish-Module -Name OriPsRepositoryBootstrap -NuGetApiKey $env:PSGALLERYAPIKEY
+        Publish-Module -Name OriPsRepositoryBootstrap -NuGetApiKey $env:SECRET_PSGALLERYAPIKEY
       pwsh: true
       workingDirectory: '$(System.DefaultWorkingDirectory)'
-      condition: and(succeeded(), eq(${{ parameters.pushPackage }}, true))
+      condition: and(succeeded(), eq({{ parameters.pushPackage }}, true))
