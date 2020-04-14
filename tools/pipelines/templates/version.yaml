@@ -4,4 +4,4 @@ steps:
   displayName: 'GitVersion'
   inputs:
     runtime: 'core'
-    configFilePath: '../gitversion.yaml'
+    configFilePath: 'tools/pipelines/gitversion.yaml'
