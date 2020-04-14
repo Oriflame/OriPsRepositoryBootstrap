@@ -1,4 +1,4 @@
-# PsRepositoryBootstrap
+# OriPsRepositoryBootstrap
 
 Powershell repository bootstrap (Import-OriPsModule) to hide logic behind integration PowerShell Repository with DevOps nuget source.
 
@@ -37,8 +37,8 @@ The above command will take care of every necessary steps like:
 7. Installs the module
 8. Loads required version of the module
 
-TODO: it also installs latest version of PsRepositoryBootstrap if not installed
-TODO: once a while (daily?) it checks for higher version of the PsRepositoryBootstrap module and installs it if available
+TODO: it also installs latest version of OriPsRepositoryBootstrap if not installed
+TODO: once a while (daily?) it checks for higher version of the OriPsRepositoryBootstrap module and installs it if available
 
 ## How to test
 

@@ -1,4 +1,4 @@
-# CI build for PsRepositoryBootstrap
+# CI build for OriPsRepositoryBootstrap
 # it should run Pester to unit test bootstrap
 # it should deploy to devops artifacts if pushpackage = true
 # TBD: call template from /devops

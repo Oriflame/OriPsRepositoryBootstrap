@@ -1,22 +1,22 @@
-Get-Module -Name PsRepositoryBootstrap | Remove-Module;
-Import-Module -Name "$PSScriptRoot\..\src\PsRepositoryBootstrap.psd1";
+Get-Module -Name OriPsRepositoryBootstrap | Remove-Module;
+Import-Module -Name "$PSScriptRoot\..\src\OriPsRepositoryBootstrap.psd1";
 
 Describe 'Testing Import-OriPsModule' {
-    InModuleScope PsRepositoryBootstrap {
-        $numCalls          = @{ [Version]"0.9.0" = 0; [Version]"1.0.0" = 0; [Version]"1.1.0" = 0 };
+    InModuleScope OriPsRepositoryBootstrap {
+        $numCalls = @{ [Version]"0.9.0" = 0; [Version]"1.0.0" = 0; [Version]"1.1.0" = 0 };
         $numCallsUntilTrue = @{ [Version]"0.9.0" = 0; [Version]"1.0.0" = 1; [Version]"1.1.0" = 2 };
 
         Mock Test-GetModule { 
-            if($numCallsUntilTrue[$RequiredVersion] -ne $numCalls[$RequiredVersion]) {
+            if ($numCallsUntilTrue[$RequiredVersion] -ne $numCalls[$RequiredVersion]) {
                 $numCalls[$RequiredVersion] = $numCalls[$RequiredVersion] + 1;
                 return $false;
             }
 
             return $true;
         };
-        Mock Import-Module {};
-        Mock Install-Module {};
-        Mock Invoke-RegisterOriflameFeeds {};
+        Mock Import-Module { };
+        Mock Install-Module { };
+        Mock Invoke-RegisterOriflameFeeds { };
 
         It "Module is already imported" {
             Import-OriPsModule -Name "someModule" -RequiredVersion "0.9.0";
@@ -45,7 +45,7 @@ Describe 'Testing Import-OriPsModule' {
 }
 
 Describe 'Testing Test-GetModule' {
-    InModuleScope PsRepositoryBootstrap {
+    InModuleScope OriPsRepositoryBootstrap {
         Mock Get-Module { return @{ Version = [Version]"1.0.0" }; } -ParameterFilter { $Name -and $Name -eq "ImportedModule" };
         Mock Get-Module { return @{ Version = [Version]"0.9.0" }; } -ParameterFilter { $Name -and $Name -eq "NotImportedModule" };
 
@@ -60,7 +60,7 @@ Describe 'Testing Test-GetModule' {
 }
 
 Describe 'Testing Invoke-RegisterOriflameFeeds' {
-    InModuleScope PsRepositoryBootstrap {
+    InModuleScope OriPsRepositoryBootstrap {
         Context "No registered package feeds" {
             It "PowerShellGet is not installed" {
                 Mock Test-GetModule { return $false; };
@@ -81,7 +81,7 @@ Describe 'Testing Invoke-RegisterOriflameFeeds' {
                 Mock Test-GetModule { return $true; };
                 Mock Install-Module
                 Mock Get-PSRepository { return @([PSCustomObject]@{ SourceLocation = "https://pkgs.dev.azure.com/oriflame/_packaging/PackageManagementFeed/nuget/v2" }) };
-                Mock Register-PSRepository {};
+                Mock Register-PSRepository { };
 
                 Invoke-RegisterOriflameFeeds -Feeds @( "GlobalDev" );
                 Assert-MockCalled -CommandName Test-GetModule -Times 1 -Exactly;
@@ -96,7 +96,7 @@ Describe 'Testing Invoke-RegisterOriflameFeeds' {
                 Mock Test-GetModule { return $true; };
                 Mock Install-Module
                 Mock Get-PSRepository { return @([PSCustomObject]@{ SourceLocation = "https://pkgs.dev.azure.com/oriflame/_packaging/PackageManagementFeed/nuget/v2" }) };
-                Mock Register-PSRepository {};
+                Mock Register-PSRepository { };
 
                 Invoke-RegisterOriflameFeeds -Feeds @( "PackageManagementFeed" );
                 Assert-MockCalled -CommandName Test-GetModule -Times 1 -Exactly;
