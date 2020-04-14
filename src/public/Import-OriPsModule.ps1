@@ -133,7 +133,7 @@ function Test-GetModule {
     [CmdLetBinding()]
     [OutputType([bool])]
     param (
-        [parameter(Mandatory = $true, HelpMessage = "Exact name of the mmodule")]
+        [parameter(Mandatory = $true, HelpMessage = "Exact name of the module")]
         [string] $Name,
 
         [parameter(Mandatory = $true, HelpMessage = "Minimum required module version")]
@@ -154,7 +154,7 @@ function Invoke-RegisterOriflameFeeds {
     #>
     [CmdLetBinding()]
     param (
-        [Parameter(ValueFromPipeline = $true, HelpMessage = "List of Oriaflame NuGet feeds to register (eg. GlobalDev, PackageManagementFeed).")]
+        [Parameter(ValueFromPipeline = $true, HelpMessage = "List of Oriflame NuGet feeds to register (eg. GlobalDev, PackageManagementFeed).")]
         [string[]] $feeds
     )
     begin {
