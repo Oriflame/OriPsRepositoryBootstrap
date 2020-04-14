@@ -31,32 +31,8 @@ jobs:
     vmImage: 'ubuntu-latest'
 
   steps:
-  - task: GitVersion@5
-    displayName: 'GitVersion'
-    inputs:
-      runtime: 'core'
-      configFilePath: 'tools/pipelines/gitversion.yaml'
-    
-  - task: PowerShell@2
-    name: update_build_and_module_version
-    displayName: Update Build and Module Version
-    inputs:
-      targetType: 'inline'
-      script: |
-        [bool]$isPrerelease = '$(GitVersion.NuGetPreReleaseTag)' -ne '';
-        $version = '$(GitVersion.Major).$(GitVersion.Minor).$(Build.BuildId)'
-        if ($isPrerelease)
-        {
-            $buildversion = "$version-$(GitVersion.NuGetPreReleaseTag)"
-        }else
-        {
-            $buildversion = $version
-        }
-        Write-Output "##vso[build.updatebuildnumber]$buildversion"
-        $psManifest = Get-ChildItem -Path "$(System.DefaultWorkingDirectory)/src" -Filter *.psd1 | Select-Object -ExpandProperty FullName -First 1
-        Update-ModuleManifest -Path $psManifest -ModuleVersion $version -Prerelease '$(GitVersion.NuGetPreReleaseTag)'
-      pwsh: true
-      workingDirectory: '$(System.DefaultWorkingDirectory)'
+  - template: templates/version.yaml
+  - template: templates/update_build_and_module_version.yaml
   
   - ${{ if eq(parameters.pushPackage, true) }}:
     - task: PowerShell@2

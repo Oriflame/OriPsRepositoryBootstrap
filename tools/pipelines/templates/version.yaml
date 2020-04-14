@@ -1,0 +1,7 @@
+# gitversion steps
+steps:
+- task: GitVersion@5
+  displayName: 'GitVersion'
+  inputs:
+    runtime: 'core'
+    configFilePath: '../gitversion.yaml'
