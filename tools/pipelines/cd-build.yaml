@@ -71,5 +71,5 @@ jobs:
         pwsh: true
         workingDirectory: '$(System.DefaultWorkingDirectory)'
         condition: and(succeeded())
-        env:
-          PsGalleryApiKey: $(PsGalleryApiKey)
+      env:
+        PsGalleryApiKey: $(PsGalleryApiKey)
